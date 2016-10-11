@@ -6,6 +6,7 @@ There's no memory optimization yet, i want to program some structures first.
 
         DONE              WISH LiST
         Stack            Linked list
+                       Sorted linked list
                             Queue
                       Double linked list
                       Binary search tree
