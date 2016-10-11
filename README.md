@@ -1,2 +1,5 @@
-# estructuras_de_datos
-Estructuras básicas de datos para conocerlas practicar programación c/c++
+# Data structures
+
+Just a basic data structures for lear about them and practise my c/c++.
+
+There's no memory optimization yet, i want to program some structures first.
