@@ -6,6 +6,7 @@
 	#define _STACKH
 
 	#include "basics.h"
+
 //  Class declaration
 template <class T>
 class stack {
@@ -15,10 +16,7 @@ class stack {
 				T __data;
 				node * __next;
 
-				node(T data, node* next){
-					this->__data = data;
-					this->__next = next;
-				}
+				node(T data, node* next) : __data(data), __next(next){};
 				~node(){};
 		};
 
@@ -27,9 +25,7 @@ class stack {
 		node* _head;
 	public:
 		// Constructor
-		stack(){
-			this->_num = 0;
-			this->_head = NULL;
+		stack() : _num(0), _head(NULL) {
 		};
 
 		// Destructor
@@ -45,8 +41,8 @@ class stack {
 			node* auxHead;
 
 			// Check exceptios
-			/*if(this->isEmpty())
-				throw EPilaVacia;*/
+			if(this->isEmpty())
+				throw empty_stack();
 
 			// Copy of the requested data
 			aux = this->_head->__data;
