@@ -224,8 +224,52 @@ class bintree {
 		this->_equil(curr);
 	};
 
+	// Exchanges the value of an element and the min of a tree
+	void _deleteMin(node* &f, node* &curr, node* &arb){
+		int hL, hR;
+		// check if i found the min
+		if(!curr->left){
+			arb->_data = curr->_data;
+			// check for right child
+			if(curr->_right){
+				f->_left = curr->_right;
+				hL = f->_left->_h;
+			} else {
+				f->_left = NULL;
+				hL=0;
+			}
+			if(!f->_right)hR=0;
+			else hR = f->_right->_h;
+			f->_h = maximo(hL, hR) + 1;
+
+			delete(curr);
+			curr = NULL;
+			return;
+		}
+		// continuing searching
+		_deleteMin(curr->_left, arb);
+	}
+
 	// Fills the stack with the elements preorden
-	void _remove(T elem, node* curr) {};
+	void _remove(T elem, node* &curr) {
+		node aux=NULL, aux1=NULL;
+		// check for final
+		if(!_cmp(curr->_data, elem)){
+			std::cout<<"Elemento encontrado\n";
+			// exchange with min of right child
+			_deleteMin(curr, curr->_right, curr);
+			return;
+		}
+
+		// check for childs
+		if(_cmp(curr->_data, elem)>0)
+			_remove(elem, curr->_left);
+		if(_cmp(curr->_data, elem)<0)
+			_remove(elem, curr->_right);
+
+		// equil
+		this->_equil(curr);
+	};
 
 	// Fills the stack with the elements inorden
 	void _inorden(stack<T> &s, node *curr) {
