@@ -39,15 +39,15 @@ class bintree {
 		int hL=0, hR=0;
 
 		// LR
-		if(curr->_left != NULL){
-			if(curr->_left->_right != NULL && curr->_right->_right!=NULL)
-			if(curr->_left->_right->_left != NULL && curr->_left->_right->_right != NULL){
-				if(curr->_right != NULL)
+		if(curr->_left){
+			if(curr->_right)
+			if(curr->_left->_right && curr->_right->_right)
+			if(curr->_left->_right->_left && curr->_left->_right->_right){
+				if(curr->_right)
 					hR = curr->_right->_h;
 				if((curr->_left->_right->_left->_h == hR)||(curr->_left->_right->_right->_h == hR)) {
-					std::cout<<"LR detectada\n";
+					std::cout<<"\n	LR detectada\n";
 					// Change pointers
-					std::cout<<"Elemento: "<<curr->_data<<"\n";
 					aux = curr;
 					aux1 = curr->_left;
 					curr = aux1->_right;
@@ -74,13 +74,13 @@ class bintree {
 				}
 			}
 		// LL
-			if(curr->_right!= NULL)
+			if(curr->_right)
 				hR = curr->_right->_h;
 			else
 				hR = 0;
 			hL = curr->_left->_h;
 			if(hL-hR>1){
-				std::cout<<"LL detectada\n";
+				std::cout<<"\n	LL detectada\n";
 				// Change pointers
 					aux = curr;
 					aux1 = curr->_left->_right;
@@ -110,13 +110,14 @@ class bintree {
 			}
 		}
 		// RL
-		if(curr->_right!= NULL){
-		if(curr->_right->_left != NULL && curr->_left->_left!=NULL)
-			if(curr->_right->_left->_right != NULL && curr->_right->_left->_left != NULL){
-				if(curr->_left != NULL)
+		if(curr->_right){
+		if(curr->_left)
+		if(curr->_right->_left && curr->_left->_left)
+			if(curr->_right->_left->_right && curr->_right->_left->_left){
+				if(curr->_left)
 					hL = curr->_left->_h;
 				if((curr->_right->_left->_right->_h == hL)||(curr->_right->_left->_left->_h == hL)) {
-					std::cout<<"RL detectada\n";
+					std::cout<<"\n	RL detectada\n";
 					// Change pointers
 					aux = curr;
 					aux1 = curr->_right;
@@ -149,7 +150,7 @@ class bintree {
 				hL = curr->_left->_h;
 			hR = curr->_right->_h;
 			if(hR-hL>1){
-				std::cout<<"   RR detectada\n";
+				std::cout<<"\n   RR detectada\n";
 				// Change pointers
 					aux = curr;
 					aux1 = curr->_right->_left;
@@ -228,11 +229,41 @@ class bintree {
 	void _deleteMin(node* &f, node* &curr, node* &arb){
 		int hL, hR;
 		// check if i found the min
-		if(!curr->left){
+		if(!curr->_left){
+			std::cout<<curr->_data<<"\n";
 			arb->_data = curr->_data;
+			std::cout<<arb->_data<<"\n";
 			// check for right child
 			if(curr->_right){
-				f->_left = curr->_right;
+				f->_right = curr->_right;
+				hL = f->_right->_h;
+			} else {
+				f->_right = NULL;
+				hL=0;
+			}
+			if(!f->_left)hR=0;
+			else hR = f->_left->_h;
+			f->_h = maximo(hL, hR) + 1;
+
+			delete(curr);
+
+			// equil
+			this->_equil(f);
+			return;
+		}
+		// continuing searching
+		_deleteMin(curr, curr->_left, arb);
+	}
+
+	void _deleteMax(node* &f, node* &curr, node* &arb){
+		int hL, hR;
+		// check if i found the min
+		std::cout<<arb->_data<<"\n";
+		if(!curr->_left){
+			arb->_data = curr->_data;
+			// check for right child
+			if(curr->_left){
+				f->_left = curr->_left;
 				hL = f->_left->_h;
 			} else {
 				f->_left = NULL;
@@ -244,49 +275,55 @@ class bintree {
 
 			delete(curr);
 			curr = NULL;
+
+			// equil
+			this->_equil(f);
 			return;
 		}
 		// continuing searching
-		_deleteMin(curr->_left, arb);
+		_deleteMax(curr, curr->_right, arb);
 	}
 
-	// Fills the stack with the elements preorden
-	void _remove(T elem, node* &curr) {
-		node aux=NULL, aux1=NULL;
+	// finds the element to delete
+	void _delete(T elem, node* &curr, node* &f, bool child) {
+		node *aux=NULL, *aux1=NULL;
 		// check for final
 		if(!_cmp(curr->_data, elem)){
-			std::cout<<"Elemento encontrado\n";
-			// exchange with min of right child
-			_deleteMin(curr, curr->_right, curr);
+
+			// check for leaf
+			if((!curr->_right) && (!curr->_left)){
+				if(f){// check for root
+					if(child)// check what child is curr
+						f->_left = NULL;
+					else
+						f->_right = NULL;
+				}
+				delete(curr);
+			}
+			else if(!curr->_right){// check for left child
+				_deleteMax(curr, curr->_right, curr);
+			}
+			else{// exchange with min of right child
+				_deleteMin(curr, curr->_right, curr);
+			}
+
+			std::cout<<"Elemento eliminado\n";
 			return;
 		}
 
 		// check for childs
 		if(_cmp(curr->_data, elem)>0)
-			_remove(elem, curr->_left);
+			_delete(elem, curr->_left, curr, true);
 		if(_cmp(curr->_data, elem)<0)
-			_remove(elem, curr->_right);
+			_delete(elem, curr->_right, curr, false);
 
 		// equil
 		this->_equil(curr);
 	};
 
-	// Fills the stack with the elements inorden
-	void _inorden(stack<T> &s, node *curr) {
-		if(!curr)
-			return;
-		// Push left child
-		_inorden(s, curr->_left);
-		// Push current
-		s.push(curr->_data);
-		// Push right child
-		_inorden(s, curr->_right);
-	};
-
 	void _exist(node *curr, T elem, int &i) {
 		// Check for final
 		if(!curr){
-			std::cout<<"Hoja\n";
 			i=-1;
 		}
 		// Check witch path should i choose
@@ -302,6 +339,18 @@ class bintree {
 	}
 
 	// Fills the stack with the elements inorden
+	void _inorden(stack<T> &s, node *curr) {
+		if(!curr)
+			return;
+		// Push left child
+		_inorden(s, curr->_left);
+		// Push current
+		s.push(curr->_data);
+		// Push right child
+		_inorden(s, curr->_right);
+	};
+
+	// Fills the stack with the elements preorden
 	void _preorden(stack<T> &s, node *curr) {
 		if(!curr)
 			return;
@@ -329,7 +378,7 @@ class bintree {
 				this->_insert(elem, this->_root);
 		};
 
-		void remove (T elem) { this->_remove(elem, this->_root); };
+		void deleteElem (T elem) { node* f=NULL; this->_delete(elem, this->_root, f, true); };
 
 		/* Check if an element is in the structure:
 				- -1 in negative case
