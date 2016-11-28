@@ -17,4 +17,11 @@ class empty_stack : public std::exception {
 	    };
 };
 
+class empty : public std::exception {
+	public:
+		const char* what() const throw() {
+			return "Error: estructura vacía";
+		}
+};
+
 #endif /* _MYEXCEPTIONH */

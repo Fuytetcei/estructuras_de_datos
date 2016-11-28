@@ -9,5 +9,6 @@
 	#include <stdlib.h>
 	#include <string>
 	#include <math.h>
+	#include "myexception.h"
 
 #endif /* _BASICSH */

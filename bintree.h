@@ -4,6 +4,9 @@
 
 */
 
+#ifndef _BINTREE_H
+	#define _BINTREE_H
+
 #include "basics.h"
 #include "stack.h"
 
@@ -16,7 +19,7 @@ class bintree {
 				int _h;
 				node * _left, *_right;
 
-				node(T data, node *right, node *left) : _data(data), _left(left), _right(right){};
+				node(T data) : _data(data), _left(NULL), _right(NULL){};
 				~node(){};
 		};
 
@@ -187,7 +190,7 @@ class bintree {
 		// Check the left child
 		if(this->_cmp(curr->_data, elem) > 0) {
 			if(!curr->_left){
-				curr->_left = new node(elem, NULL, NULL);
+				curr->_left = new node(elem);
 				this->_num++;
 				curr->_left->_h=1;
 				if(!curr->_right)
@@ -205,7 +208,7 @@ class bintree {
 		}// Check the right child
 		else if(this->_cmp(curr->_data, elem) < 0){
 			if(!curr->_right){
-				curr->_right = new node(elem, NULL, NULL);
+				curr->_right = new node(elem);
 				this->_num++;
 			  curr->_right->_h = 1;
 				if(!curr->_left)
@@ -290,8 +293,9 @@ class bintree {
 		// check for final
 		if(!_cmp(curr->_data, elem)){
 
-			// check for leaf
-			if((!curr->_right) && (!curr->_left)){
+			// check for leaf -------------
+			if((!curr->_right) && \
+				(!curr->_left)){
 				if(f){// check for root
 					if(child)// check what child is curr
 						f->_left = NULL;
@@ -325,6 +329,7 @@ class bintree {
 		// Check for final
 		if(!curr){
 			i=-1;
+			return;
 		}
 		// Check witch path should i choose
 		if( (i!=-1) && (_cmp(elem, curr->_data)==1)){
@@ -373,7 +378,7 @@ class bintree {
 
 		void insert (T elem) {
 			if(!this->_root)
-				this->_root = new node(elem, NULL, NULL);
+				this->_root = new node(elem);
 			else
 				this->_insert(elem, this->_root);
 		};
@@ -384,7 +389,7 @@ class bintree {
 				- -1 in negative case
 				- A positive number with the cost in affirmative case
 		*/
-		T exist(T elem) {
+		int exist(T elem) {
 			int i=0;
 
 			_exist(this->_root, elem, i);
@@ -392,7 +397,13 @@ class bintree {
 			return i;
 		};
 
-		int getRootValue(){return this->_root->_data;}
+		const T getRoot(){
+			if(this->_root)
+				return (const T)this->_root->_data;
+			else
+				throw empty();
+		}
+
 
 		void preorden(stack<T> &dev) {
 			_inorden(dev, this->_root);
@@ -402,3 +413,5 @@ class bintree {
 			_preorden(dev, this->_root);
 		};
 };
+
+#endif /* _BINTREE_H */
